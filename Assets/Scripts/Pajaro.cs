@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 
 public class Pajaro : MonoBehaviour
 {
@@ -28,4 +30,28 @@ public class Pajaro : MonoBehaviour
         float rotacion = Mathf.LerpAngle(transform.eulerAngles.z, Mathf.Sign(rb2d.velocity.y) * rotacionMaxima, velocidadRotacion * Time.deltaTime);
         transform.rotation = Quaternion.Euler(0, 0, rotacion);
     }
+    
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        // Verifica si el objeto con el que colisionamos tiene el tag "tubo"
+        if (other.CompareTag("tubo"))
+        {
+            // Congela el tiempo en el juego
+            Time.timeScale = 0f;
+        
+            // Espera unos segundos (3 segundos en este caso) y luego reinicia la escena
+            StartCoroutine(ReiniciarEscenaConRetraso(2f));
+        }
+    }
+
+    private IEnumerator ReiniciarEscenaConRetraso(float tiempoDeEspera)
+    {
+        // Espera el tiempo dado, pero sin detener el contador global
+        yield return new WaitForSecondsRealtime(tiempoDeEspera);
+    
+        // Reiniciar la escena actual
+        Time.timeScale = 1f; // Restaura el tiempo del juego
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);  // Recarga la escena
+    }
+
 }
