@@ -74,8 +74,6 @@ public class GameManager : MonoBehaviour
         {
             isGameOver = true;
             
-
-
             // Verifica y guarda el mejor puntaje
             if (currentScore > bestScore)
             {
@@ -108,7 +106,7 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator RestartSceneAfterDelay(float delay)
     {
-        yield return new WaitForSecondsRealtime(delay);  // Pausa de 0.1 segundos
+        yield return new WaitForSecondsRealtime(delay); 
         Time.timeScale = 1f;  // Reanudar el tiempo
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);  // Reiniciar la escena
     }

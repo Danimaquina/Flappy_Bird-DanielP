@@ -11,7 +11,7 @@ public class Pajaro : MonoBehaviour
     private Rigidbody2D rb2d;
     private bool esperandoReinicio = false;
 
-    private GameManager gameManager; // Referencia al GameManager
+    private GameManager gameManager; 
 
     private void Start()
     {
@@ -51,13 +51,14 @@ public class Pajaro : MonoBehaviour
             }
             esperandoReinicio = true;
 
-            // Llamar al reinicio con un retraso de 5 segundos
-            StartCoroutine(RestartAfterDelay(3f));  // Espera de 5 segundos
+            // Llamar al reinicio con un retraso de 3 segundos
+            StartCoroutine(RestartAfterDelay(3f)); 
         }
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
+        // Añade Score cuando el jugador pase entre 2 tubos
         if (other.CompareTag("Paso"))
         {
             if (gameManager != null)
@@ -69,7 +70,7 @@ public class Pajaro : MonoBehaviour
 
     private IEnumerator RestartAfterDelay(float delay)
     {
-        yield return new WaitForSecondsRealtime(delay);  // Espera de 5 segundos
+        yield return new WaitForSecondsRealtime(delay);  
         if (gameManager != null)
         {
             gameManager.RestartGame();  // Reiniciar el juego
