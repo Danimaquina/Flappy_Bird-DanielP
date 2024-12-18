@@ -22,6 +22,8 @@ public class GameManager : MonoBehaviour
 
     public AudioClip scoreClip;
     public AudioClip deathClip;
+    public AudioClip PositiveDeathClip;
+
 
     private bool isGameStarted = false;
 
@@ -72,14 +74,19 @@ public class GameManager : MonoBehaviour
         {
             isGameOver = true;
             
-            audioSource.PlayOneShot(deathClip);
 
 
             // Verifica y guarda el mejor puntaje
             if (currentScore > bestScore)
             {
+                audioSource.PlayOneShot(PositiveDeathClip);
+
                 bestScore = currentScore;
                 PlayerPrefs.SetInt("BestScore", bestScore);
+            }
+            else
+            {
+                audioSource.PlayOneShot(deathClip);
             }
 
             // Muestra la UI de Game Over
