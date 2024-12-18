@@ -1,68 +1,58 @@
-using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using TMPro;
+using System.Collections;
 
 public class Pajaro : MonoBehaviour
 {
-    public float impulso;  
-    public float rotacionMaxima = 45f;  
+    public float impulso;
+    public float rotacionMaxima = 45f;
     public float velocidadRotacion = 5f;
-    public GameObject GameOver;
-    public GameObject info;
-    public TextMeshProUGUI Score;
 
-    private int ScoreValue;
     private Rigidbody2D rb2d;
     private bool esperandoReinicio = false;
 
-    public AudioSource audio;
-    public AudioClip clip;
-    
-    void Start()
+    private GameManager gameManager; // Referencia al GameManager
+
+    private void Start()
     {
-        rb2d = GetComponent<Rigidbody2D>();  
-        ScoreValue = 0;
-        GameOver.SetActive(false);
-        info.SetActive(false);
+        rb2d = GetComponent<Rigidbody2D>();
+        Animator animator = GetComponent<Animator>();
+        animator.updateMode = AnimatorUpdateMode.UnscaledTime;
+
+        // Buscar GameManager en la escena
+        gameManager = FindObjectOfType<GameManager>(); 
     }
 
-    void Update()
+    private void Update()
     {
-        Score.text = ScoreValue.ToString();
-
         // Detectar salto si no estamos en estado de reinicio
-        if (!esperandoReinicio && Input.anyKeyDown)
+        if (!esperandoReinicio && (Input.anyKeyDown || Input.touchCount > 0))
         {
-            // Aplica una fuerza hacia arriba en el Rigidbody2D
-            rb2d.velocity = Vector2.zero;  
+            rb2d.velocity = Vector2.zero;
             rb2d.AddForce(Vector2.up * impulso, ForceMode2D.Impulse);
         }
 
         // Rotación del objeto para simular la inclinación
         float rotacion = Mathf.LerpAngle(transform.eulerAngles.z, Mathf.Sign(rb2d.velocity.y) * rotacionMaxima, velocidadRotacion * Time.deltaTime);
         transform.rotation = Quaternion.Euler(0, 0, rotacion);
-
-        // Detectar reinicio cuando estamos esperando
-        if (esperandoReinicio && Input.anyKeyDown)
-        {
-            StartCoroutine(ReiniciarEscenaConRetraso(0.1f));
-            esperandoReinicio = false; // Evita múltiples llamadas al Coroutine
-        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Verifica si el objeto con el que colisionamos tiene el tag "tubo"
         if (other.CompareTag("tubo"))
         {
-            // Congela el tiempo en el juego
-            Time.timeScale = 0f;
+            Animator animator = GetComponent<Animator>();
+            animator.SetTrigger("Tocado");
 
-            GameOver.SetActive(true);
-            info.SetActive(true);
-
+            // Verificar si gameManager no es null
+            if (gameManager != null)
+            {
+                gameManager.TriggerGameOver();
+            }
             esperandoReinicio = true;
+
+            // Llamar al reinicio con un retraso de 5 segundos
+            StartCoroutine(RestartAfterDelay(3f));  // Espera de 5 segundos
         }
     }
 
@@ -70,18 +60,19 @@ public class Pajaro : MonoBehaviour
     {
         if (other.CompareTag("Paso"))
         {
-            ScoreValue++;
-            audio.PlayOneShot(clip);
+            if (gameManager != null)
+            {
+                gameManager.AddScore();
+            }
         }
     }
 
-    private IEnumerator ReiniciarEscenaConRetraso(float tiempoDeEspera)
+    private IEnumerator RestartAfterDelay(float delay)
     {
-        // Espera el tiempo dado, pero sin detener el contador global
-        yield return new WaitForSecondsRealtime(tiempoDeEspera);
-
-        // Reiniciar la escena actual
-        Time.timeScale = 1f; // Restaura el tiempo del juego
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name); // Recarga la escena
+        yield return new WaitForSecondsRealtime(delay);  // Espera de 5 segundos
+        if (gameManager != null)
+        {
+            gameManager.RestartGame();  // Reiniciar el juego
+        }
     }
 }

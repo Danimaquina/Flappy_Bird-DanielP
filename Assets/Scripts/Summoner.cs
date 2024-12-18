@@ -4,15 +4,11 @@ using UnityEngine;
 
 public class Summoner : MonoBehaviour
 {
-    // Prefab que se generará
     public GameObject prefab;
     
-    // Tiempo entre cada generación (en segundos)
     public float tiempoGeneracion = 1f;
 
     // Rango para modificaciones aleatorias
-   
-    
     public Vector3 rangoPosicionMinima = new Vector3(0.0f, -1.0f, 0.0f);
     public Vector3 rangoPosicionMaxima = new Vector3(0.0f, 1.0f, 0.0f);
    
@@ -26,7 +22,6 @@ public class Summoner : MonoBehaviour
     // Función que genera el prefab y lo modifica aleatoriamente
     private void GenerarPrefab()
     {
-        // Instancia el prefab en la posición del objeto que tiene este script
         GameObject objetoGenerado = Instantiate(prefab, transform.position, Quaternion.identity);
 
         // Modificar aleatoriamente la posición del objeto

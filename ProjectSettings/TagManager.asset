@@ -8,6 +8,7 @@ TagManager:
   - pajaro
   - final
   - Paso
+  - summoner
   layers:
   - Default
   - TransparentFX
